@@ -5,7 +5,7 @@ import 'package:firebase_core/firebase_core.dart';
 
 void main() async{
   await Firebase.initializeApp(
-    options: FirebaseOptions(
+    options: const FirebaseOptions(
       apiKey: "AIzaSyBynYnOmCAtDtluLaONM4FP4opJEgKnOxM",
       appId: "1:1018180009414:web:95b6deb7f0c387f74d46c7",
       messagingSenderId: "1018180009414",
@@ -27,20 +27,18 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: const HomePage(),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-  final String title;
+class HomePage extends StatefulWidget {
+  const HomePage({super.key});
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  State<HomePage> createState() => _HomePageState();
 }
-
-class _MyHomePageState extends State<MyHomePage> {
+class _HomePageState extends State<HomePage> {
   int currentFrame = 0;
   String userId = "a";
   List<Food> history = [Food(300, 32, "hamborgr", 20, 20)];
@@ -50,7 +48,7 @@ class _MyHomePageState extends State<MyHomePage> {
   static const TextStyle listItemTitleStyle = TextStyle(fontSize: 25);
 
   final List<BottomNavigationBarItem> navbarItems = [
-    BottomNavigationBarItem(icon: SvgPicture.asset('Assets/img/ico_chart.svg', width: 30, height: 30), label: "a"),
+    BottomNavigationBarItem(icon: SvgPicture.asset('Assets/img/ico_chart.svg', width: 30, height: 30), label: "Stats"),
     BottomNavigationBarItem(icon: SvgPicture.asset('Assets/img/ico_qr_code.svg'), label: "b"),
     BottomNavigationBarItem(icon: SvgPicture.asset('Assets/img/ico_profile.svg'), label: "c"),
   ];
@@ -101,7 +99,7 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(widget.title),
+        title: const Text("CaloriMeter"),
       ),
 
       body: getMainWidget(),
@@ -119,6 +117,7 @@ class _MyHomePageState extends State<MyHomePage> {
     return Row(
       mainAxisSize:MainAxisSize.max,
       children: [
+        const Image(image: AssetImage("Assets/img/ico_null.png"), width: 60, height: 60),
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -150,6 +149,42 @@ class _MyHomePageState extends State<MyHomePage> {
     }
     return foodTileList;
   }
+}
+
+class LoginPage extends StatefulWidget {
+  const LoginPage({super.key});
+
+  @override
+  State<LoginPage> createState() => _LoginPageState();
+}
+
+class _LoginPageState extends State<LoginPage>{
+
+  void verify(ctx) {
+    Navigator.push(context, MaterialPageRoute(builder: (context) => const HomePage()));
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        title: const Text("CaloriMeter"),
+      ),
+
+      body: Center(
+        child: Column (
+          children: <Widget>[
+            TextButton(onPressed: () => {
+              verify(context)
+            }, child: const Text("Sign-in")),
+          ]
+        )
+      ),
+
+    );
+  }
+  
 }
 
 class Food {
