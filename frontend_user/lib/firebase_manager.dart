@@ -8,7 +8,7 @@ class Food {
     int price;
     int protein;
     int sugar;
-    String timeStamp;
+    String? timeStamp;
 
     Food(this.calories, this.category, this.fat, this.name, this.price, this.protein, this.sugar, this.timeStamp);
 }
@@ -33,6 +33,14 @@ class FireBaseManager {
             }
         });
         return ret;
+    }
+
+    Future<Food> getFood(String id) async {
+      Food ret = Food(0, '', 0, '', 0, 0, 0, null);
+      await itemCollection.doc(id).get().then((food) async{
+        ret = Food(food['calories'], food['category'], food['fat'], food['name'], food['price'], food['protein'], food['sugar'], null);
+      });
+      return ret;
     }
 
 }
