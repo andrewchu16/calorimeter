@@ -1,17 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'firebase_manager.dart';
+import 'food.dart';
 import 'package:firebase_core/firebase_core.dart';
 
-void main() async{
-  await Firebase.initializeApp(
-    options: const FirebaseOptions(
-      apiKey: "AIzaSyBynYnOmCAtDtluLaONM4FP4opJEgKnOxM",
-      appId: "1:1018180009414:web:95b6deb7f0c387f74d46c7",
-      messagingSenderId: "1018180009414",
-      projectId: "calorimeter-a3a91"
-    ),
-  );
+void main() {
   runApp(const MyApp());
 }
 
@@ -41,8 +34,8 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   int currentFrame = 0;
   String userId = "a";
-  List<Food> history = [Food(300, 32, "hamborgr", 20, 20)];
-  FireBaseManager database = FireBaseManager();
+  List<Food> history = [Food(300, "fast food",20, "hamborgr", 20, 20,20, "toeday")];
+  FireBaseManager? database;
   bool asPercentage = false;
   static const Widget nullIco = Image(image: AssetImage('Assets/img/ico_null.png'));
   static const TextStyle listItemTitleStyle = TextStyle(fontSize: 25);
@@ -52,6 +45,17 @@ class _HomePageState extends State<HomePage> {
     BottomNavigationBarItem(icon: SvgPicture.asset('Assets/img/ico_qr_code.svg'), label: "b"),
     BottomNavigationBarItem(icon: SvgPicture.asset('Assets/img/ico_profile.svg'), label: "c"),
   ];
+
+  _HomePageState(){
+    firebaseSetup().then((value) => {
+
+    });
+  }
+  void getDatabase(FireBaseManager value){
+    database = value;
+    database!.getHistory(userId).then((value) => {history = value});
+  }
+
 
   void setFrame(index) {
     setState(() {
@@ -187,13 +191,17 @@ class _LoginPageState extends State<LoginPage>{
   
 }
 
-class Food {
-  int calories;
-  int fat;
-  String name;
-  int protein;
-  int sugar;
-
-   Food (this.calories, this.fat, this.name, this.protein, this.sugar);
+Future<FireBaseManager> firebaseSetup() async {
+  await Firebase.initializeApp(
+    options: const FirebaseOptions(
+        apiKey: "AIzaSyBynYnOmCAtDtluLaONM4FP4opJEgKnOxM",
+        appId: "1:1018180009414:web:95b6deb7f0c387f74d46c7",
+        messagingSenderId: "1018180009414",
+        projectId: "calorimeter-a3a91"
+    ),
+  );
+  return FireBaseManager();
 }
+
+
 

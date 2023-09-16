@@ -1,17 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'food.dart';
 
-class Food {
-    int calories;
-    String category;
-    int fat;
-    String name;
-    int price;
-    int protein;
-    int sugar;
-    String? timeStamp;
-
-    Food(this.calories, this.category, this.fat, this.name, this.price, this.protein, this.sugar, this.timeStamp);
-}
 
 class FireBaseManager {
     FirebaseFirestore firestore = FirebaseFirestore.instance;
