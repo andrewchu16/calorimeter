@@ -1,7 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'firebase_manager.dart';
+import 'package:firebase_core/firebase_core.dart';
 
-void main() {
+void main() async{
+  await Firebase.initializeApp(
+    options: FirebaseOptions(
+      apiKey: "AIzaSyBynYnOmCAtDtluLaONM4FP4opJEgKnOxM",
+      appId: "1:1018180009414:web:95b6deb7f0c387f74d46c7",
+      messagingSenderId: "1018180009414",
+      projectId: "calorimeter-a3a91"
+    ),
+  );
   runApp(const MyApp());
 }
 
@@ -34,6 +44,7 @@ class _MyHomePageState extends State<MyHomePage> {
   int currentFrame = 0;
   String userId = "a";
   List<Food> history = [Food(300, 32, "hamborgr", 20, 20)];
+  FireBaseManager database = FireBaseManager();
   bool asPercentage = false;
   static const Widget nullIco = Image(image: AssetImage('Assets/img/ico_null.png'));
   static const TextStyle listItemTitleStyle = TextStyle(fontSize: 25);
