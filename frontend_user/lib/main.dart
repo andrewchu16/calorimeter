@@ -33,12 +33,14 @@ class HomePage extends StatefulWidget {
 }
 class _HomePageState extends State<HomePage> {
   int currentFrame = 0;
-  String userId = "a";
-  List<Food> history = [Food(300, "fast food",20, "hamborgr", 20, 20,20, "toeday")];
+  String userId = "dHg450bwEz2YoX0N8diI";
+  List<Food> history = [];
   FireBaseManager? database;
   bool asPercentage = false;
   static const Widget nullIco = Image(image: AssetImage('Assets/img/ico_null.png'));
   static const TextStyle listItemTitleStyle = TextStyle(fontSize: 25);
+
+
 
   final List<BottomNavigationBarItem> navbarItems = [
     BottomNavigationBarItem(icon: SvgPicture.asset('Assets/img/ico_chart.svg', width: 30, height: 30), label: "Stats"),
@@ -46,16 +48,18 @@ class _HomePageState extends State<HomePage> {
     BottomNavigationBarItem(icon: SvgPicture.asset('Assets/img/ico_profile.svg'), label: "c"),
   ];
 
-  _HomePageState(){
+  @override
+  void initState() {
+    super.initState();
     firebaseSetup().then((value) => {
-
+      getDatabase(value)
     });
   }
+
   void getDatabase(FireBaseManager value){
     database = value;
-    database!.getHistory(userId).then((value) => {history = value});
+    database!.getHistory(userId).then((val) => {print("----------------------------"+val.toString())});
   }
-
 
   void setFrame(index) {
     setState(() {
@@ -65,6 +69,9 @@ class _HomePageState extends State<HomePage> {
   Widget getMainWidget(){
     Widget returnVal;
     if (currentFrame == 0) {
+      if (database != null){
+        database!.getHistory(userId).then((val) => {print("----------------------------"+val.toString())});
+      }
       returnVal = ConstrainedBox(
         constraints: const BoxConstraints(minWidth: double.infinity),
         child: Column(
@@ -192,14 +199,18 @@ class _LoginPageState extends State<LoginPage>{
 }
 
 Future<FireBaseManager> firebaseSetup() async {
+  print("Aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
   await Firebase.initializeApp(
     options: const FirebaseOptions(
-        apiKey: "AIzaSyBynYnOmCAtDtluLaONM4FP4opJEgKnOxM",
-        appId: "1:1018180009414:web:95b6deb7f0c387f74d46c7",
-        messagingSenderId: "1018180009414",
-        projectId: "calorimeter-a3a91"
+      apiKey: "AIzaSyBynYnOmCAtDtluLaONM4FP4opJEgKnOxM",
+      authDomain: "calorimeter-a3a91.firebaseapp.com",
+      projectId: "calorimeter-a3a91",
+      storageBucket: "calorimeter-a3a91.appspot.com",
+      messagingSenderId: "1018180009414",
+      appId: "1:1018180009414:web:95b6deb7f0c387f74d46c7",
     ),
   );
+  print("B");
   return FireBaseManager();
 }
 
