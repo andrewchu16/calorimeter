@@ -1,6 +1,17 @@
 import 'package:flutter/material.dart';
+import 'firebase_manager.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:qr_flutter/qr_flutter.dart';
 
-void main() {
+void main() async {
+  await Firebase.initializeApp(
+    options: FirebaseOptions(
+      apiKey: "AIzaSyBynYnOmCAtDtluLaONM4FP4opJEgKnOxM",
+      appId: "1:1018180009414:web:95b6deb7f0c387f74d46c7",
+      messagingSenderId: "1018180009414",
+      projectId: "calorimeter-a3a91"
+    ),
+  );
   runApp(const MyApp());
 }
 
@@ -55,16 +66,33 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
 
-  void _incrementCounter() {
-    setState(() {
+  List<bool> checkStates = [];
+  List<Food> foods = [];
+  String company = "a0yXbgm7FSXwmuO0bq8D";
+  FireBaseManager database = FireBaseManager();
+  bool databaseLoaded = false;
+  bool createQR = false;
+
+  void _loadData() async {
+    databaseLoaded = true;
+    foods = await database.getItems(company);
+    for(Food food in foods){
+        checkStates.add(false);
+    }
+    setState((){
       // This call to setState tells the Flutter framework that something has
       // changed in this State, which causes it to rerun the build method below
       // so that the display can reflect the updated values. If we changed
       // _counter without calling setState(), then the build method would not be
       // called again, and so nothing would appear to happen.
-      _counter++;
+    });
+  }
+
+  void _generateQR() {
+    createQR = true;
+    setState((){
+
     });
   }
 
@@ -105,18 +133,37 @@ class _MyHomePageState extends State<MyHomePage> {
           // wireframe for each widget.
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
+
+            if(createQR == true) QrImageView(
+              data: '1234567890',
+              version: QrVersions.auto,
+              size: 200.0,
             ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
+            
+            if (databaseLoaded == false) TextButton(
+                onPressed: () async { 
+                  _loadData();
+                },
+                child: Text('Load'),
             ),
+            for(int i=0; i<foods.length; i++)
+              
+              CheckboxListTile(
+                title: Text(foods[i].name),
+                subtitle: Text(foods[i].category),
+                value: checkStates[i],
+                onChanged: (value){
+                  setState((){
+                    checkStates[i] = !checkStates[i];
+                  });
+                }
+              ),
+            
           ],
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
+        onPressed: _generateQR,
         tooltip: 'Increment',
         child: const Icon(Icons.add),
       ), // This trailing comma makes auto-formatting nicer for build methods.

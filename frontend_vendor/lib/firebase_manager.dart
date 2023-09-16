@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Food {
-    int price;
+    double price;
     String itemId;
     String name;
     String category;
@@ -20,6 +20,7 @@ class FireBaseManager {
         List<Food> ret = [];
         await companyCollection.doc(id).get().then((query) async{
             for(String itemId in query["items"]){
+                print(itemId);
                 await itemCollection.doc(itemId).get().then((food){
                     ret.add(Food(food['price'], itemId, food['name'], food['category']));
                 });
@@ -31,7 +32,7 @@ class FireBaseManager {
     void sendItems(String userId, List<String> purchases, String timeStamp) async{
         await userCollection.doc(userId).get().then((query) async{
             query["purchases"].add({"itemIds": purchases,
-                                    "timestamp:" timeStamp})
+                                    "timestamp": timeStamp});
         });
     }
 
