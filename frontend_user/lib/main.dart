@@ -58,7 +58,7 @@ class _HomePageState extends State<HomePage> {
 
   Future<Image> resizeImage(String url) {
     return Future.delayed(Duration.zero, () async {
-      (await NetworkAssetBundle(Uri.parse(url)).load(url)).buffer.asUint8List();
+      tempImg = (await NetworkAssetBundle(Uri.parse(url)).load(url)).buffer.asUint8List();
       Img.Image? img = Img.decodeImage(tempImg!);
       Img.Image resized = Img.copyResize(img!, width: 56, height: 56);
       resizedImg = Uint8List.fromList(Img.encodePng(resized));
@@ -161,14 +161,15 @@ class _HomePageState extends State<HomePage> {
             padding: const EdgeInsets.all(2),
             child: ico,
           ),
-          title: Text(food.name, style: listItemTitleStyle),
+          title: Padding(padding: const EdgeInsets.only(bottom: 3),
+            child: Text(food.name, style: listItemTitleStyle),),
           subtitle: Row(
             mainAxisSize: MainAxisSize.max,
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(food.calories.toString()),
-              Text(food.protein.toString()),
-              Text(food.sugar.toString()),
+              Text("cals: "+food.calories.toString()),
+              Text("prot: "+food.protein.toString()),
+              Text("sug: "+food.sugar.toString()),
             ],
           ),
         ),

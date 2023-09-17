@@ -9,7 +9,7 @@ class Food {
     double price;
     double protein;
     double sugar;
-    Timestamp timeStamp;
+    String timeStamp;
 
     Food(this.calories, this.category, this.fat, this.name, this.url, this.price, this.protein, this.sugar, this.timeStamp);
 }
