@@ -12,10 +12,10 @@ We divided the project into three parts: an admin panel for web, a vendor app fo
 Because we did not have an actual NFC reader for testing payments, we had to substitute with QR scanning. It was also the first time for us exploring mobile development with Firebase and Flutter. We faced difficulties with materializing our ideas in a language we did not speak (code).
 
 ## Accomplishments that we're proud of
-We are proud of having been able to learn something new so quickly. In the end, we manaaged to make the product we aimed for.
+We are proud of having been able to learn something new so quickly. In the end, we managed to make the product we aimed for even though it was initially outside of our skill set to do so.
 
 ## What we learned
-We learned 
+We learned that even some deceptively simple sounding ideas may have difficult complications that arise. Planning earlier and more extensively is paramount to getting a better coding experience as less variables are in the short duration where the actual coding takes place.
 
 ## What's next for CaloriMeter
 CaloriMeter has many steps to becoming a production-ready product. In terms of cybersecurity, we have some work to do to protect and prevent misuse of the database from bad actors. With more time and the proper equipments for testing, we would use financial services like [Stripe](https://stripe.com/en-ca) and [Plaid](https://plaid.com/) to create a smart wallet. We think CaloriMeter is a great idea that has the potential to be so much more: for example, monitoring caffeine and medication intake. Someday, Calorimeter could be part of your digital world. 
