@@ -151,15 +151,25 @@ class _HomePageState extends State<HomePage> {
 
 
   Widget historyListTile(Food food) {
-    Image ico = const Image(image: AssetImage("Assets/img/ico_null.png"), width: 60, height: 60);
-    resizeImage(food.url).then((value) => {ico = value});
     return Padding(
       padding: const EdgeInsets.fromLTRB(4, 6, 6, 10),
       child:Card(
         child: ListTile(
           leading: Padding(
             padding: const EdgeInsets.all(2),
-            child: ico,
+            child: FutureBuilder<Image>(
+              future: resizeImage(food.url),
+              builder: (BuildContext context, AsyncSnapshot<Image> snapshot) {
+                late Image ico;
+                if (snapshot.hasData){
+                  ico = snapshot.data!;
+                } else {
+                  ico = const Image(image: AssetImage("Assets/img/ico_null.png"), width: 60, height: 60);
+                }
+                return ico;
+              },
+            ),
+
           ),
           title: Padding(padding: const EdgeInsets.only(bottom: 3),
             child: Text(food.name, style: listItemTitleStyle),),
