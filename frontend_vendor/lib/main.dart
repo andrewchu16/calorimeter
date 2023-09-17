@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'firebase_manager.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:qr_flutter/qr_flutter.dart';
+import 'package:mobile_scanner/mobile_scanner.dart';
 
 void main() async {
   await Firebase.initializeApp(
@@ -72,7 +72,6 @@ class _MyHomePageState extends State<MyHomePage> {
   String company = "a0yXbgm7FSXwmuO0bq8D";
   FireBaseManager database = FireBaseManager();
   bool databaseLoaded = false;
-  bool createQR = false;
 
   void _loadData() async {
     databaseLoaded = true;
@@ -86,13 +85,6 @@ class _MyHomePageState extends State<MyHomePage> {
       // so that the display can reflect the updated values. If we changed
       // _counter without calling setState(), then the build method would not be
       // called again, and so nothing would appear to happen.
-    });
-  }
-
-  void _generateQR() {
-    createQR = true;
-    setState((){
-
     });
   }
 
@@ -134,12 +126,17 @@ class _MyHomePageState extends State<MyHomePage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
 
-            if(createQR == true) QrImageView(
-              data: '1234567890',
-              version: QrVersions.auto,
-              size: 200.0,
+            MobileScanner(
+            // fit: BoxFit.contain,
+              onDetect: (capture) {
+                final List<Barcode> barcodes = capture.barcodes;
+                final dynamic? image = capture.image;
+                for (final barcode in barcodes) {
+                  debugPrint('Barcode found! ${barcode.rawValue}');
+                }
+              },
             ),
-            
+
             if (databaseLoaded == false) TextButton(
                 onPressed: () async { 
                   _loadData();
@@ -163,7 +160,7 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: _generateQR,
+        onPressed:_loadData,
         tooltip: 'Increment',
         child: const Icon(Icons.add),
       ), // This trailing comma makes auto-formatting nicer for build methods.
