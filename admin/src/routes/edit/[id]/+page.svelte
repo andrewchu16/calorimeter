@@ -5,5 +5,5 @@
 </script>
 
 <svelte:head>
-    <title>Edit Item {data.name}</title>
+    <title>Edit {data.name}</title>
 </svelte:head>

@@ -14,7 +14,6 @@
                 companyId: doc.id
             });
         });
-        console.log(companies);
 
         return companies;
     }
