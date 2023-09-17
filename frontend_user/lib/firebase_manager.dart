@@ -1,6 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'food.dart';
 
+class User{
+  double balance;
+  String email;
+  String username;
+  User(this.balance, this.email, this.username);
+}
 
 class FireBaseManager {
     FirebaseFirestore firestore = FirebaseFirestore.instance;
@@ -8,6 +14,14 @@ class FireBaseManager {
     CollectionReference companyCollection = FirebaseFirestore.instance.collection('companies');
     CollectionReference itemCollection = FirebaseFirestore.instance.collection('items');
     CollectionReference userCollection = FirebaseFirestore.instance.collection('users');
+
+    Future<User> getUserInfo(String id) async{
+      User ret = User(0, "", "");
+      await userCollection.doc(id).get().then((user) async{
+          ret = User(user["balance"], user["email"], user["username"]);
+      });
+      return ret;
+    }
 
     Future<List<Food>> getHistory(String id) async {
         List<Food> ret = [];
