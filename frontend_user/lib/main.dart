@@ -1,5 +1,5 @@
 import 'dart:typed_data';
-
+import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:qr_flutter/qr_flutter.dart';
@@ -39,11 +39,13 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   int currentFrame = 0;
   String userId = "dHg450bwEz2YoX0N8diI";
+  User? user;
   List<Food> history = [];
   FireBaseManager? database;
   bool asPercentage = false;
   //static const Widget nullIco = Image(image: AssetImage('Assets/img/ico_null.png'));
   static const TextStyle listItemTitleStyle = TextStyle(fontSize: 25);
+  User nullUser = User(0, "your.email.here@caloriMet.re", "Please Sign-in");
 
 
 
@@ -72,15 +74,11 @@ class _HomePageState extends State<HomePage> {
     firebaseSetup().then((value) => {
       getDatabase(value)
     });
-
-
   }
 
-  void getDatabase(FireBaseManager value){
-    database = value;
-
+  void getDatabase(FireBaseManager db){
+    database ??= db;
     database!.getHistory(userId).then((val) => setState(()=>history = val));
-
   }
 
   void setFrame(index) {
@@ -118,11 +116,44 @@ class _HomePageState extends State<HomePage> {
         ),
       );
     } else if (currentFrame == 2) {
-      returnVal = const SizedBox(
+      Widget cpnt;
+      if (user == null) {
+        Future<User> promise = database!.getUserInfo(userId);
+        promise.then((value) => {user = value});
+        cpnt = FutureBuilder(future: promise, builder: (BuildContext context, AsyncSnapshot<User> snapshot) {
+          User currUser = nullUser;
+          if (snapshot.hasData){
+            currUser = snapshot.data!;
+          }
+          return Column(
+            children: <Widget>[
+              Text(currUser.username, style: const TextStyle(fontSize: 40)),
+              Text(currUser.email, style: const TextStyle(fontSize: 18, color: Colors.grey)),
+              Padding(padding: EdgeInsets.fromLTRB(0, 80, 0, 80),
+                child: Text("Current Balance: ${NumberFormat.simpleCurrency().format(currUser.balance)}", style: const TextStyle(fontSize: 24)),)
+
+            ],
+          );
+        });
+      } else {
+        cpnt = Column(
+          children: <Widget>[
+            Text(user!.username, style: const TextStyle(fontSize: 40)),
+            Text(user!.email, style: const TextStyle(fontSize: 18, color: Colors.grey)),
+            Padding(padding: const EdgeInsets.fromLTRB(0, 80, 0, 80),
+              child: Text("Current Balance: ${NumberFormat.simpleCurrency().format(user!.balance)}", style: const TextStyle(fontSize: 24)),)
+          ],
+        );
+      }
+      returnVal = SizedBox(
         width: double.infinity,
         child: Column(
           children: [
-
+            const Padding(
+              padding: EdgeInsets.fromLTRB(0, 80, 0, 20),
+              child:Image(image: AssetImage("Assets/img/empty_profile.png"), width: 300, height: 300)
+            ),
+            cpnt,
           ],
         )
       );
@@ -169,7 +200,6 @@ class _HomePageState extends State<HomePage> {
                 return ico;
               },
             ),
-
           ),
           title: Padding(padding: const EdgeInsets.only(bottom: 3),
             child: Text(food.name, style: listItemTitleStyle),),
