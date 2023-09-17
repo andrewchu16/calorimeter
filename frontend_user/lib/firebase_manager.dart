@@ -16,7 +16,7 @@ class FireBaseManager {
                 List<dynamic> itemIds = item["itemIds"];
                 for(dynamic purchase in itemIds){
                     await itemCollection.doc(purchase as String).get().then((food){
-                        ret.add(Food(food['calories'] + 0.0, food['category'], food['fat'] + 0.0, food['name'], food['price'] + 0.0, food['protein'] + 0.0, food['sugar'] + 0.0, item['timestamp']));
+                        ret.add(Food(food['calories'] + 0.0, food['category'], food['fat'] + 0.0, food['name'], food['imgURL'], food['price'] + 0.0, food['protein'] + 0.0, food['sugar'] + 0.0, item['timestamp']));
                     });
                 }
             }
@@ -27,7 +27,7 @@ class FireBaseManager {
     Future<Food> getFood(String id) async {
       late Food ret;
       await itemCollection.doc(id).get().then((food) async{
-        ret = Food(food['calories'], food['category'], food['fat'], food['name'], food['price'], food['protein'], food['sugar'], food['timestamp']);
+        ret = Food(food['calories'], food['category'], food['fat'], food['name'], food['imgURL'], food['price'], food['protein'], food['sugar'], food['timestamp']);
       });
       return ret;
     }
