@@ -22,7 +22,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'CaloriMeter',
       theme: ThemeData(
         // This is the theme of your application.
         //
@@ -42,7 +42,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: const MyHomePage(title: 'CalorieMeter: Vendor'),
     );
   }
 }
@@ -72,6 +72,8 @@ class _MyHomePageState extends State<MyHomePage> {
   String company = "a0yXbgm7FSXwmuO0bq8D";
   FireBaseManager database = FireBaseManager();
   bool databaseLoaded = false;
+  bool scanningQR = false;
+  bool? transition = null;
 
   void _loadData() async {
     databaseLoaded = true;
@@ -85,6 +87,22 @@ class _MyHomePageState extends State<MyHomePage> {
       // so that the display can reflect the updated values. If we changed
       // _counter without calling setState(), then the build method would not be
       // called again, and so nothing would appear to happen.
+    });
+  }
+
+  void _showScanner() {
+    if(databaseLoaded == true) scanningQR = true;
+    setState((){
+
+    });
+  }
+
+  void _hideScanner(){
+    for(int i=0; i<checkStates.length; i++){
+      checkStates[i] = false;
+    }
+    setState((){
+
     });
   }
 
@@ -107,6 +125,7 @@ class _MyHomePageState extends State<MyHomePage> {
         title: Text(widget.title),
       ),
       body: Center(
+        //mainAxisAlignment: MainAxisAlignment.center,
         // Center is a layout widget. It takes a single child and positions it
         // in the middle of the parent.
         child: Column(
@@ -125,18 +144,43 @@ class _MyHomePageState extends State<MyHomePage> {
           // wireframe for each widget.
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-
-            MobileScanner(
-            // fit: BoxFit.contain,
-              onDetect: (capture) {
-                final List<Barcode> barcodes = capture.barcodes;
-                final dynamic? image = capture.image;
-                for (final barcode in barcodes) {
-                  debugPrint('Barcode found! ${barcode.rawValue}');
-                }
-              },
+            if(transition == true && scanningQR == false) Text(
+              "Transaction Accepted",
+              style: TextStyle(backgroundColor: Colors.green),
             ),
-
+            if(transition == false && scanningQR  == false) Text(
+              "Transaction Rejected",
+              style: TextStyle(backgroundColor: Colors.red),
+              ),
+             if(scanningQR == true) Container(
+              height: 250,
+              width: 250,
+              child: MobileScanner(
+                fit: BoxFit.contain,
+                controller: MobileScannerController(
+                  detectionSpeed: DetectionSpeed.noDuplicates,
+                  facing: CameraFacing.front,
+                  torchEnabled: true,
+                ),
+                onDetect: (capture) async{
+                  final List<Barcode> barcodes = capture.barcodes;
+                  final dynamic? image = capture.image;
+                  String currentTime = DateTime.now().toString();
+                  List<String> purchases = [];
+                  for(int i=0; i<checkStates.length; i++){
+                    if(checkStates[i] == true){
+                      purchases.add(foods[i].itemId);
+                    }
+                  }
+                  if(scanningQR == true){
+                    scanningQR = false;
+                    print('Barcode found! ${barcodes[0].rawValue}');
+                    transition = await database.sendItems(barcodes[0].rawValue!, purchases, currentTime);
+                    _hideScanner();
+                  }
+                },
+              ),
+            ),
             if (databaseLoaded == false) TextButton(
                 onPressed: () async { 
                   _loadData();
@@ -147,7 +191,7 @@ class _MyHomePageState extends State<MyHomePage> {
               
               CheckboxListTile(
                 title: Text(foods[i].name),
-                subtitle: Text(foods[i].category),
+                subtitle: Text(foods[i].category + " \$" + foods[i].price.toString()),
                 value: checkStates[i],
                 onChanged: (value){
                   setState((){
@@ -160,7 +204,7 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed:_loadData,
+        onPressed: _showScanner,
         tooltip: 'Increment',
         child: const Icon(Icons.add),
       ), // This trailing comma makes auto-formatting nicer for build methods.

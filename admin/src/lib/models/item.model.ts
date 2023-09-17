@@ -5,5 +5,6 @@ export default interface Item {
     calories: number,
     fat: number,
     protein: number,
-    sugar: number
+    sugar: number,
+    imgURL: string
 }

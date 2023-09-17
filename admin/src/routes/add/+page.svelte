@@ -9,6 +9,7 @@
         updateDoc,
         type DocumentData
     } from 'firebase/firestore';
+    import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
 
     let name: string;
     let category: string;
@@ -17,6 +18,7 @@
     let fat: number;
     let protein: number;
     let sugar: number;
+    let files: FileList;
 
     let success = false;
     let failed = false;
@@ -32,9 +34,11 @@
             console.log('Company ID not set ' + companyId);
             return;
         }
-
+        
         const itemsRef = collection(db, 'items');
-
+        
+        const storage = getStorage();
+        
         const itemRef = await addDoc(itemsRef, {
             name: name,
             category: category,
@@ -42,7 +46,18 @@
             calories: calories,
             fat: fat,
             protein: protein,
-            sugar: sugar
+            sugar: sugar,
+            imgURL: ""
+        });
+        
+        const storageRef = ref(storage, itemRef.id);
+        for (const file of files) {
+            await uploadBytes(storageRef, file);
+            console.log(storageRef.bucket);
+        }
+
+        await updateDoc(itemRef, {
+            imgURL: await getDownloadURL(storageRef)
         });
 
         const companyDocRef = doc(db, 'companies/' + companyId);
@@ -56,6 +71,7 @@
                 items: [...items, itemRef.id]
             });
         }
+        
 
         console.log('successfully added item');
         success = true;
@@ -71,8 +87,8 @@
     <title>Add Item</title>
 </svelte:head>
 
-<div class="flex flex-col items-center mt-6">
-    <h1 class="text-2xl">Add Menu Item</h1>
+<div class="flex flex-col items-center pt-6 overflow-y-auto h-full">
+    <h1 class="text-3xl">Add Item</h1>
     <form on:submit|preventDefault={onSubmit} class="flex flex-col gap-4 w-1/3">
         <section class="mt-3">
             <label for="name">Name</label>
@@ -148,12 +164,21 @@
                 class="w-full bg-white px-2 py-1 rounded-md mt-2 outline-none active:bg-neutral-100 focus:bg-neutral-100"
             />
         </section>
-
+        <section>
+            <label for="imgURL" class="mr-4">Image</label>
+            <input
+                required
+                type="file"
+                id="imgURL"
+                class="bg-white px-2 py-1 rounded-md mt-2 block w-full text-md"
+                bind:files
+            />
+        </section>
         <button
             type="submit"
             class:success
             class:failed
-            class="bg-white rounded-md w-fit px-4 py-2 mt-2 mb-4">{submitButtonText}</button
+            class="bg-white rounded-md w-fit px-5 py-2 mt-2 mb-4 mx-auto">{submitButtonText}</button
         >
     </form>
 </div>
