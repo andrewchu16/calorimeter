@@ -29,12 +29,28 @@ class FireBaseManager {
         return ret;
     }
 
-    void sendItems(String userId, List<String> purchases, String timeStamp) async{
+    Future<bool> sendItems(String userId, List<String> purchases, String timeStamp) async{
+      double cost = 0;
+      double money = 0;
+      await userCollection.doc(userId).get().then((query){
+        money = query["balance"];
+      });
+      for(int i=0; i<purchases.length; i++){
+        await itemCollection.doc(purchases[i]).get().then((query){
+          cost += query["price"];
+        });
+      }
+      if(money >= cost){
+        userCollection.doc(userId).update({"balance": money - cost});
+      }else{
+        return false;
+      }
       List<Map<String, dynamic>> mp = [{"itemIds": purchases, "timestamp": timeStamp}];
       await userCollection.doc(userId).update({"purchases": FieldValue.arrayUnion(mp)});
         /*await userCollection.doc(userId).get().then((query) async{
             query.update({"purchases": FieldValue.arrayUnion({"itemIds": purchases, "timestamp": timeStamp})});
         });*/
+      return true;
     }
 
 }

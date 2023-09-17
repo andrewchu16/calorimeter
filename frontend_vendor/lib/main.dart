@@ -22,7 +22,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'CaloriMeter',
       theme: ThemeData(
         // This is the theme of your application.
         //
@@ -42,7 +42,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: const MyHomePage(title: 'CalorieMeter: Vendor'),
     );
   }
 }
@@ -73,6 +73,7 @@ class _MyHomePageState extends State<MyHomePage> {
   FireBaseManager database = FireBaseManager();
   bool databaseLoaded = false;
   bool scanningQR = false;
+  bool? transition = null;
 
   void _loadData() async {
     databaseLoaded = true;
@@ -97,7 +98,6 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void _hideScanner(){
-    scanningQR = false;
     for(int i=0; i<checkStates.length; i++){
       checkStates[i] = false;
     }
@@ -125,6 +125,7 @@ class _MyHomePageState extends State<MyHomePage> {
         title: Text(widget.title),
       ),
       body: Center(
+        //mainAxisAlignment: MainAxisAlignment.center,
         // Center is a layout widget. It takes a single child and positions it
         // in the middle of the parent.
         child: Column(
@@ -143,17 +144,25 @@ class _MyHomePageState extends State<MyHomePage> {
           // wireframe for each widget.
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
+            if(transition == true && scanningQR == false) Text(
+              "Transaction Accepted",
+              style: TextStyle(backgroundColor: Colors.green),
+            ),
+            if(transition == false && scanningQR  == false) Text(
+              "Transaction Rejected",
+              style: TextStyle(backgroundColor: Colors.red),
+              ),
              if(scanningQR == true) Container(
-              height: 200,
-              width: 200,
+              height: 250,
+              width: 250,
               child: MobileScanner(
                 fit: BoxFit.contain,
                 controller: MobileScannerController(
-                  detectionSpeed: DetectionSpeed.normal,
+                  detectionSpeed: DetectionSpeed.noDuplicates,
                   facing: CameraFacing.front,
                   torchEnabled: true,
                 ),
-                onDetect: (capture) {
+                onDetect: (capture) async{
                   final List<Barcode> barcodes = capture.barcodes;
                   final dynamic? image = capture.image;
                   String currentTime = DateTime.now().toString();
@@ -163,12 +172,12 @@ class _MyHomePageState extends State<MyHomePage> {
                       purchases.add(foods[i].itemId);
                     }
                   }
-                  for (final barcode in barcodes) {
-                    print('Barcode found! ${barcode.rawValue}');
-                    database.sendItems(barcode.rawValue!, purchases, currentTime);
-                    print('HI');
+                  if(scanningQR == true){
+                    scanningQR = false;
+                    print('Barcode found! ${barcodes[0].rawValue}');
+                    transition = await database.sendItems(barcodes[0].rawValue!, purchases, currentTime);
+                    _hideScanner();
                   }
-                  _hideScanner();
                 },
               ),
             ),
@@ -182,7 +191,7 @@ class _MyHomePageState extends State<MyHomePage> {
               
               CheckboxListTile(
                 title: Text(foods[i].name),
-                subtitle: Text(foods[i].category),
+                subtitle: Text(foods[i].category + " \$" + foods[i].price.toString()),
                 value: checkStates[i],
                 onChanged: (value){
                   setState((){
