@@ -15,20 +15,24 @@ export const load: PageServerLoad = async ({ params }) => {
     } else {
         const itemData: DocumentData = docSnap.data();
         const category: string = itemData.category;
+        const price: number = itemData.price;
         const fatVal: number = itemData.fat;
         const name: string = itemData.name;
         const proteinVal: number = itemData.protein;
         const sugarVal: number = itemData.sugar;
         const calories: number = itemData.calories;
+        const imgURL: string = itemData.imgURL;
 
         return {
             itemId: itemId,
             category: category,
+            price: price,
             fatVal: fatVal,
             name: name,
             proteinVal: proteinVal,
             sugarVal: sugarVal,
-            calories: calories
+            calories: calories,
+            imgURL: imgURL
         };
     }
 };
