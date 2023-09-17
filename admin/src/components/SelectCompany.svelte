@@ -22,7 +22,6 @@
     let selectedId: string;
 
     const onChange = async () => {
-        console.log(selectedId);
         const company = (await companies).filter((c) => c.companyId === selectedId)[0];
         session.setCompany(company);
     };

@@ -14,13 +14,14 @@ function createSession() {
             curSession.companyName = newName;
             return curSession;
         }),
-        setCompanyId: (newId: string) => ((curSession: Session) => {
+        setCompanyId: (newId: string) => update((curSession: Session) => {
             curSession.companyId = newId;
             return curSession;
         }),
-        setCompany: (newCompany: Company) => ((curSession: Session) => {
+        setCompany: (newCompany: Company) => update((curSession: Session) => {
             curSession.companyId = newCompany.companyId;
             curSession.companyName = newCompany.companyName;
+            return curSession;
         }),
         set
     }

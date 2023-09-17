@@ -2,7 +2,6 @@
     import { db } from '$lib/firestore';
     import { session } from '$lib/session';
     import {
-        DocumentReference,
         addDoc,
         collection,
         doc,
@@ -30,7 +29,7 @@
 
     const onSubmit = async () => {
         if (!companyId) {
-            console.log('Company ID not set' + companyId);
+            console.log('Company ID not set ' + companyId);
             return;
         }
 
@@ -46,7 +45,7 @@
             sugar: sugar
         });
 
-        const companyDocRef = doc(db, 'companies');
+        const companyDocRef = doc(db, 'companies/' + companyId);
         const companySnap = await getDoc(companyDocRef);
 
         if (companySnap.exists()) {
