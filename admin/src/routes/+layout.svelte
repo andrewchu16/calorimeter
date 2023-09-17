@@ -5,7 +5,7 @@
 
 <div class="flex w-screen h-screen">
     <Navigation />
-    <main class="w-full h-full">
+    <main class="w-full h-full bg-neutral-200">
         <slot />
     </main>
 </div>
