@@ -30,10 +30,11 @@ class FireBaseManager {
     }
 
     void sendItems(String userId, List<String> purchases, String timeStamp) async{
-        await userCollection.doc(userId).get().then((query) async{
-            query["purchases"].add({"itemIds": purchases,
-                                    "timestamp": timeStamp});
-        });
+      List<Map<String, dynamic>> mp = [{"itemIds": purchases, "timestamp": timeStamp}];
+      await userCollection.doc(userId).update({"purchases": FieldValue.arrayUnion(mp)});
+        /*await userCollection.doc(userId).get().then((query) async{
+            query.update({"purchases": FieldValue.arrayUnion({"itemIds": purchases, "timestamp": timeStamp})});
+        });*/
     }
 
 }
