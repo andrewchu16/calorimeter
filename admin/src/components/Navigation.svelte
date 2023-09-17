@@ -10,7 +10,7 @@
         >
         <a
             class="hover:brightness-75 transition-[filter] duration-150 bg-neutral-300 text-lg p-6"
-            href="/view">View Items</a
+            href="/">View Items</a
         >
     </div>
     <div class="mx-6">
