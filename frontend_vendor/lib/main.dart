@@ -72,6 +72,7 @@ class _MyHomePageState extends State<MyHomePage> {
   String company = "a0yXbgm7FSXwmuO0bq8D";
   FireBaseManager database = FireBaseManager();
   bool databaseLoaded = false;
+  bool scanningQR = false;
 
   void _loadData() async {
     databaseLoaded = true;
@@ -85,6 +86,23 @@ class _MyHomePageState extends State<MyHomePage> {
       // so that the display can reflect the updated values. If we changed
       // _counter without calling setState(), then the build method would not be
       // called again, and so nothing would appear to happen.
+    });
+  }
+
+  void _showScanner() {
+    if(databaseLoaded == true) scanningQR = true;
+    setState((){
+
+    });
+  }
+
+  void _hideScanner(){
+    scanningQR = false;
+    for(int i=0; i<checkStates.length; i++){
+      checkStates[i] = false;
+    }
+    setState((){
+
     });
   }
 
@@ -125,18 +143,35 @@ class _MyHomePageState extends State<MyHomePage> {
           // wireframe for each widget.
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-
-            MobileScanner(
-            // fit: BoxFit.contain,
-              onDetect: (capture) {
-                final List<Barcode> barcodes = capture.barcodes;
-                final dynamic? image = capture.image;
-                for (final barcode in barcodes) {
-                  debugPrint('Barcode found! ${barcode.rawValue}');
-                }
-              },
+             if(scanningQR == true) Container(
+              height: 200,
+              width: 200,
+              child: MobileScanner(
+                fit: BoxFit.contain,
+                controller: MobileScannerController(
+                  detectionSpeed: DetectionSpeed.normal,
+                  facing: CameraFacing.front,
+                  torchEnabled: true,
+                ),
+                onDetect: (capture) {
+                  final List<Barcode> barcodes = capture.barcodes;
+                  final dynamic? image = capture.image;
+                  String currentTime = DateTime.now().toString();
+                  List<String> purchases = [];
+                  for(int i=0; i<checkStates.length; i++){
+                    if(checkStates[i] == true){
+                      purchases.add(foods[i].itemId);
+                    }
+                  }
+                  for (final barcode in barcodes) {
+                    print('Barcode found! ${barcode.rawValue}');
+                    database.sendItems(barcode.rawValue!, purchases, currentTime);
+                    print('HI');
+                  }
+                  _hideScanner();
+                },
+              ),
             ),
-
             if (databaseLoaded == false) TextButton(
                 onPressed: () async { 
                   _loadData();
@@ -160,7 +195,7 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed:_loadData,
+        onPressed: _showScanner,
         tooltip: 'Increment',
         child: const Icon(Icons.add),
       ), // This trailing comma makes auto-formatting nicer for build methods.
